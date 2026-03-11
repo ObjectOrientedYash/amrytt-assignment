@@ -10,11 +10,11 @@ export const authenticateUser = (req, res, next) => {
         return sendResponse(res, 401, false, MESSAGES.NO_TOKEN);
     }
 
-    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-        if (err) {
-            return sendResponse(res, 403, false, MESSAGES.INVALID_TOKEN);
-        }
-        req.user = user;
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = decoded;
         next();
-    });
+    } catch (error) {
+        return sendResponse(res, 403, false, MESSAGES.INVALID_TOKEN);
+    }
 };
